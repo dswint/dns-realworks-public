@@ -1,0 +1,31 @@
+---
+description: Booking calendar UX — one interactive widget per property, collection date search
+alwaysApply: true
+---
+
+# Booking calendar pattern
+
+## Property pages (`/properties/[slug]`)
+
+- Use **one** interactive widget: `PropertyBookingCalendar` in `components/marketing/property-booking-calendar.tsx`.
+- Server loads days via `fetchPropertyStayCalendar(companyId, property)` and passes `{ date, available }[]` — Hospitable when linked, else local blocks.
+- Widget UX: **single month** with prev/next, click arrival then departure on **open** nights, guests; **Book** only if `canUseDirectBook` else **Sign in to book** (see `direct-booking.mdc`).
+- Anchor: `#availability` / `scroll-mt-24` for mobile bar links.
+- **Do not** add multi-month static grids, duplicate `DateSearch` on property overview, or header CTAs that skip the widget.
+
+## Collection / home
+
+- **Date search only**: `DateSearch` → `/properties?checkIn&checkOut` → `filterOpenProperties` (no per-property calendar on the list).
+- Property cards link into the property widget (optional query prefill).
+
+## Logic
+
+- Stay open for quotes and gating: `isStayOpen` / `lib/availability.ts` (Hospitable + local reservations).
+- Grid math: `lib/calendar-grid.ts`. Night math: `lib/dates.ts` (`eachNight`, `isValidStayRange`).
+- Checkout still prices on `/book` via `quoteBooking`; widget only picks dates guests can actually book.
+
+## When extending
+
+- Reuse or extend `PropertyBookingCalendar` — don’t fork a second calendar component.
+- New surfaces (embed, modal) = same data contract + same selection rules.
+- Admin preview of guest calendar: same component with read-only prop if needed later.

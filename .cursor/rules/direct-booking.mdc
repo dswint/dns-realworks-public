@@ -1,0 +1,34 @@
+---
+description: Direct booking is trusted returning guests only — no first-time checkout
+alwaysApply: true
+---
+
+# Direct booking (guest trust)
+
+## Policy
+
+- The **marketing booking site is not for first-time acquisition**. Too much risk for cold guests.
+- **Pay / confirm on-site** only when `canUseDirectBook(guest)` → `trust_status === 'trusted'` and not `incident_flag`.
+- First stays: **Airbnb**, off-site vetting, or ops — then staff marks guest **`trusted`** in admin (or future stay-based invite without self-serve trust).
+- **Never** auto-promote guests to `trusted` on magic-link sign-in; trust is operational.
+
+## UX
+
+- `PropertyBookingCalendar`: valid dates + **trusted** → **Book** → `/book?…`; valid dates + not trusted → **Sign in to book** → `/account?next=…`; always explain returning-guests-only.
+- `/book` and `createCheckoutAction` must call `canUseDirectBook` (already via `isTrusted`).
+- Signed-in but not trusted: account copy explains direct booking is for past guests; no checkout.
+
+## Vetting (off product)
+
+- Hospitable import → `captured` / `invited`; **`trusted`** = explicit admin or defined post-stay workflow (not checkout).
+- Magic links: identify returning emails only; they do not grant book rights by themselves.
+
+## Pets / policies (later)
+
+- Pet fees, agreements, and `on_request` apply **within** trusted book flow — not a substitute for trust.
+
+## Hospitable writes (safety)
+
+- No Hospitable API sandbox. `createManualReservation` is real.
+- Gate with `hospitableReservationWriteEnabled()` (`lib/hospitable-write.ts`): default **on** only `VERCEL_ENV=production`; preview/local off unless `HOSPITABLE_RESERVATION_WRITE=true`.
+- Phase 1 testing: Stripe **test** keys + write disabled or far-future dates on one listing; never experiment on near-term booked inventory.

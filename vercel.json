@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/rates",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/airdna",
+      "schedule": "0 7 * * *"
+    }
+  ]
+}

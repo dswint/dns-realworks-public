@@ -1,0 +1,46 @@
+---
+description: Verbose git commit messages for case studies and project narrative
+alwaysApply: true
+---
+
+# Commit messages
+
+Commits are input for downstream case-study writing. Write **verbose, narrative** messages—not one-line changelog crumbs.
+
+## Format
+
+**Subject (≤72 chars):** `Area: outcome in plain language`  
+Examples: `Hospitable: fix calendar API parsing for booked nights` · `Direct booking: gate checkout on trusted guests only`
+
+**Body (required when the change is non-trivial):**
+
+- **Context** — what problem or product decision (1–2 sentences)
+- **Integration / system** — call out Hospitable, Stripe, Supabase, Vercel, PriceLabs, Better Auth, multi-tenant, etc.
+- **Behavior** — what users or admins see; what API endpoints or tables are affected
+- **Safety / scope** — env flags, company_id scoping, what we intentionally did *not* change
+
+Use complete sentences. Name files or modules only when it helps the story—not as a file list.
+
+## Examples
+
+```
+Hospitable: require properties[] when importing reservations.
+
+Hospitable v2 GET /reservations rejects unscoped list calls. Import now
+passes all listing UUIDs and requests guest/property includes. Fixes admin
+backfill for DNS Realworks tenant zero; no change to webhook ingest.
+```
+
+```
+Direct booking: trusted guests only on PropertyBookingCalendar.
+
+Product policy: first-time guests use Airbnb, not on-site checkout. Widget
+shows Sign in to book; /book redirects to account. Documented in
+direct-booking.mdc. Hospitable calendar remains read-only for all visitors.
+```
+
+## Avoid
+
+- Vague subjects: "Fix bug", "Updates", "WIP"
+- Body-less commits for features touching integrations or booking
+- Co-authored trailers unless the user asks for them

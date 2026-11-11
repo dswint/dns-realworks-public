@@ -1,0 +1,13 @@
+---
+description: One Supabase project and one Vercel project; never commit secrets
+alwaysApply: true
+---
+
+# Hosted projects
+
+Use one Supabase project and one Vercel project for this app. Do not create a second of either.
+
+- Copy `.env.local.example` to `.env.local` and fill in that project's URL, anon key, service role key, and database URL.
+- `DATABASE_URL` must be the session pooler (`aws-0-[region].pooler.supabase.com:5432`), not `db.*.supabase.co`.
+- Integration tokens (Hospitable, PriceLabs, AirDNA, Stripe) belong in `integration_accounts` or environment variables, never in source.
+- Never commit `.env.local`, `.vercel/`, or `.supabase-db-password`.

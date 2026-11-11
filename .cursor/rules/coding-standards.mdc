@@ -1,0 +1,18 @@
+---
+description: Next.js 16 / React 19 coding standards for DNS Realworks
+alwaysApply: true
+---
+
+# Coding standards
+
+- TypeScript strict. No `any`. Prefer Server Components; add `"use client"` only for interactivity.
+- App Router only. `async` page/layout params are `Promise`s in Next 16.
+- Tailwind v4 + shadcn `base-nova`. Colors, type, and radius come from `companies.theme` CSS variables — never brand hex or copy in components.
+- Every tenant table and query is `company_id`-scoped. Guests are per company, not global.
+- Property booking dates: `PropertyBookingCalendar` only on property pages; collection uses `DateSearch` + availability filter (see `booking-calendar.mdc`).
+- Direct checkout: `canUseDirectBook` only — no first-time guests on the booking site (`direct-booking.mdc`).
+- PriceLabs is the rate brain. AirDNA is market intel. Hospitable is PMS. Do not dual-write prices.
+- No `Date.now()` / `Math.random()` during render. Keep impure time in `lib/`.
+- Forms: Next.js server actions. Do not return `FormState` from a native `action` unless the form is wired for it.
+- Public site uses the service client after tenant resolve. Staff auth is Better Auth, then service role.
+- Lint (`eslint-config-next` core-web-vitals), Prettier, and `tsc --noEmit` must pass. PRs get GitHub CI plus Cursor Bugbot (`cursor review` if it did not auto-run).

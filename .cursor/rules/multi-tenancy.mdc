@@ -1,0 +1,40 @@
+---
+description: Multi-tenant SaaS boundaries—company scope, external IDs, integrations
+alwaysApply: true
+---
+
+# Multi-tenancy (consumer SaaS)
+
+DNS Realworks is **one app, many operators**. Scale by adding `companies` rows and hosts—not new codepaths per customer.
+
+## Tenant identity
+
+- **Canonical tenant** = `companies.id` (`company_id` everywhere).
+- **Public site**: `resolveTenant()` from `Host` → `companies.custom_domain` or slug subdomain; dev uses `DEV_FALLBACK_COMPANY_SLUG`.
+- **Admin**: Better Auth session → active organization → `companies.auth_org_id`. Use `getActiveCompany()` / `requirePermission()`, never guess tenant from the client.
+
+## Data rules
+
+- Every tenant-owned table has **`company_id`** and every read/write filters on it (properties, pages, guests, bookings, reservations, integration_accounts, etc.).
+- **Guests are per company**, not a global CRM.
+- **RLS** on tenant tables; server uses service role only after tenant/permission is established.
+- Never return or update another tenant’s rows from a single request—even in admin tools, cron, or webhooks.
+
+## Integrations (Hospitable, PriceLabs, Stripe, …)
+
+- Secrets and PATs live in **`integration_accounts`** (`company_id` + `provider`), not env-wide single keys for all customers.
+- **Stable external IDs belong on domain rows**, e.g. `properties.hospitable_property_id`, `pricelabs_listing_id`, `hospitable_reservations.hospitable_id` + `payload` snapshot.
+- Reconnect = new token in `integration_accounts`; **re-link by stored UUIDs**, sync missing listings, do not duplicate on id match.
+- Webhooks: **`/api/webhooks/<provider>/[companyId]`** — validate tenant exists, then company-scoped handlers only.
+
+## Product / brand
+
+- Branding from **`companies.theme`** (CSS variables), wordmark, domain—no hardcoded operator names or hex in shared components.
+- Property sites are **nested under tenant** (`properties` + `pages.property_id`), not separate apps.
+
+## When adding features
+
+- Ask: which `company_id`? Can this leak across tenants?
+- Prefer **idempotent sync** keyed on external ids (`onConflict: company_id,hospitable_id`, skip existing `hospitable_property_id`).
+- Background jobs and imports must accept **explicit `companyId`**—no “sync all tenants” without an iterator and isolation per company.
+- Do not store operator-specific business rules in global env; use company row, integration credentials, or property fields.
