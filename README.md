@@ -9,6 +9,12 @@ This repository is the application source. Credentials stay in `.env.local`
 or the host's environment. `.env.local.example` lists every variable and
 contains no keys.
 
+How the system was shaped, for a person or an agent reading the repo:
+
+- [AGENTS.md](AGENTS.md) — where to start, and the decisions that are easy to undo by accident.
+- [docs/multi-tenancy.md](docs/multi-tenancy.md) — one app, many operators, and why `company_id` is the boundary.
+- [docs/automation.md](docs/automation.md) — what runs unattended, what stays in Hospitable, and why the model is click-only.
+
 ## Stack
 
 - Next.js 16 (App Router) + React 19 + TypeScript
